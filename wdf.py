@@ -170,7 +170,7 @@ def login():
 		elif node.nodeName=='pass_ticket':
 			pass_ticket=node.childNodes[0].data;
 	#print('skey:%s,wxsid:%s,wxuin:%s,pass_ticket:%s'%(skey,wxsid,
-	#wxuin, pass_ticket))
+	#wxuin,pass_ticket))
 	if not all((skey,wxsid,wxuin,pass_ticket)):
 		return False;
 	BaseRequest={
@@ -197,7 +197,7 @@ def webwxinit():
 		f.write(data);
 		f.close();
 	data=data.decode('utf-8','replace');
-	#print(data)
+	print(data)
 	global ContactList,My,SyncKey;
 	dic=json.loads(data);
 	ContactList=dic['ContactList'];
@@ -208,8 +208,12 @@ def webwxinit():
 
 def webwxgetcontact():
 	url=base_uri+\
-		'/webwxgetcontact?pass_ticket=%s&skey=%s&r=%s'%(
-			pass_ticket,skey,int(time.time()));
+		'/webwxgetcontact?lang=zh_CN&pass_ticket=%s&r=1453888252450&seq=0&skey=%s'%(
+			#pass_ticket,int(time.time()),skey);
+			pass_ticket,skey);
+	print("pass_ticket:"+pass_ticket);
+	print("skey:"+skey);
+	print("url:"+url);
 	request=getRequest(url=url);
 	request.add_header('ContentType','application/json; charset=UTF-8');
 	response=wdf_urllib.urlopen(request);
@@ -218,7 +222,7 @@ def webwxgetcontact():
 		f=open(os.path.join(os.getcwd(),'webwxgetcontact.json'),'wb');
 		f.write(data);
 		f.close();
-	#print(data)
+	print(data);
 	data=data.decode('utf-8','replace');
 	dic=json.loads(data);
 	MemberList=dic['MemberList'];
