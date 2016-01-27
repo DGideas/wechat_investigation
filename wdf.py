@@ -23,7 +23,7 @@ import sys
 import math
 import subprocess
 import ssl
-import thread
+import _thread
 
 DEBUG = False
 
