@@ -208,9 +208,9 @@ def webwxinit():
 
 def webwxgetcontact():
 	url=base_uri+\
-		'/webwxgetcontact?lang=zh_CN&pass_ticket=%s&r=1453888252450&seq=0&skey=%s'%(
+		'/webwxbatchgetcontact?pass_ticket=%s&skey=%s&r=%s'%(
 			#pass_ticket,int(time.time()),skey);
-			pass_ticket,skey);
+			pass_ticket,skey,int(time.time()));
 	print("pass_ticket:"+pass_ticket);
 	print("skey:"+skey);
 	print("url:"+url);
@@ -252,11 +252,11 @@ def createChatroom(UserNames):
 		'MemberList':MemberList,
 		'Topic':'',
 	};
+	print(data);
 	request=getRequest(url=url,data=json.dumps(params));
 	request.add_header('ContentType','application/json; charset=UTF-8');
 	response=wdf_urllib.urlopen(request);
 	data=response.read().decode('utf-8','replace');
-	#print(data)
 	dic=json.loads(data);
 	ChatRoomName=dic['ChatRoomName'];
 	MemberList=dic['MemberList'];
@@ -282,7 +282,7 @@ def deleteMember(ChatRoomName,UserNames):
 	request.add_header('ContentType','application/json; charset=UTF-8');
 	response = wdf_urllib.urlopen(request);
 	data = response.read().decode('utf-8','replace');
-	# print(data)
+	print(data)
 	dic = json.loads(data);
 	state = responseState('deleteMember',dic['BaseResponse']);
 	return state;
@@ -299,7 +299,7 @@ def addMember(ChatRoomName,UserNames):
 	request.add_header('ContentType','application/json; charset=UTF-8');
 	response=wdf_urllib.urlopen(request);
 	data=response.read().decode('utf-8','replace');
-	#print(data)
+	print(data)
 	dic=json.loads(data);
 	MemberList=dic['MemberList'];
 	DeletedList=[];
@@ -331,7 +331,7 @@ def syncCheck():
 	request=getRequest(url=url+urlencode(params));
 	response=wdf_urllib.urlopen(request);
 	data=response.read().decode('utf-8','replace');
-	#print(data)
+	print(data)
 	#window.synccheck={retcode:"0",selector:"2"}
 	regx=r'window.synccheck={retcode:"(\d+)",selector:"(\d+)"}';
 	pm=re.search(regx,data);
@@ -352,7 +352,7 @@ def webwxsync():
 	request.add_header('ContentType','application/json; charset=UTF-8');
 	response=wdf_urllib.urlopen(request);
 	data=response.read().decode('utf-8','replace');
-	#print(data)
+	print(data)
 	dic=json.loads(data);
 	SyncKey=dic['SyncKey'];
 	state=responseState('webwxsync',dic['BaseResponse']);
