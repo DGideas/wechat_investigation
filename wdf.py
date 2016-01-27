@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
-__author__="DGideas";
 from __future__ import print_function;
+__author__="DGideas";
 import os;
 try:
 	from urllib import urlencode,quote_plus;
