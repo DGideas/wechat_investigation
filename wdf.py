@@ -27,8 +27,8 @@ import _thread
 
 DEBUG = False
 
-MAX_GROUP_NUM = 35  # 每组人数
-INTERFACE_CALLING_INTERVAL = 20  # 接口调用时间间隔, 间隔太短容易出现"操作太频繁", 会被限制操作半小时左右
+MAX_GROUP_NUM = 20  # 每组人数
+INTERFACE_CALLING_INTERVAL = 30  # 接口调用时间间隔, 间隔太短容易出现"操作太频繁", 会被限制操作半小时左右
 MAX_PROGRESS_LEN = 50
 
 QRImagePath = os.path.join(os.getcwd(), 'qrcode.jpg')
@@ -129,12 +129,12 @@ def showQRImage():
     f.write(response.read())
     f.close()
 
-    if sys.platform.find('darwin') >= 0:
-        subprocess.call(['open', QRImagePath])
-    elif sys.platform.find('linux') >= 0:
-        subprocess.call(['xdg-open', QRImagePath])
-    else:
-        os.startfile(QRImagePath)
+    #if sys.platform.find('darwin') >= 0:
+    #    subprocess.call(['open', QRImagePath])
+    #elif sys.platform.find('linux') >= 0:
+    #    subprocess.call(['xdg-open', QRImagePath])
+    #else:
+    #    os.startfile(QRImagePath)
 
     print('请使用微信扫描二维码以登录')
 
@@ -495,7 +495,7 @@ def main():
     MemberList = webwxgetcontact()
 
     print('开启心跳线程')
-    thread.start_new_thread(heartBeatLoop, ())
+    _thread.start_new_thread(heartBeatLoop, ())
 
     MemberCount = len(MemberList)
     print('通讯录共%s位好友' % MemberCount)
@@ -576,7 +576,7 @@ class UnicodeStreamFilter:
         self.target = target
         self.encoding = 'utf-8'
         self.errors = 'replace'
-        self.encode_to = self.target.encoding
+        self.encode_to = self.target.encoding
 
     def write(self, s):
         if type(s) == str:
