@@ -205,8 +205,8 @@ def webwxinit():
 		f.write(data);
 		f.close();
 	data=data.decode('utf-8','replace');
-	print(data);
-	print(url);
+	#print(data);
+	#print(url);
 	global ContactList,My,SyncKey;
 	dic=json.loads(data);
 	ContactList=dic['ContactList'];
@@ -231,8 +231,8 @@ def webwxgetcontact():
 		f=open(os.path.join(os.getcwd(),'webwxgetcontact.json'),'wb');
 		f.write(data);
 		f.close();
-	data=data.decode('gb2312','replace');
-	print(data);
+	data=data.decode('utf-8','replace');
+	#print(data);
 	dic=json.loads(data);
 	MemberList=dic['MemberList'];
 	#倒序遍历,不然删除的时候出问题..
@@ -245,8 +245,11 @@ def webwxgetcontact():
 		elif Member['UserName'] in SpecialUsers: #特殊账号
 			MemberList.remove(Member);
 		elif Member['UserName'].find('@@')!=-1: #群聊
-			MemberList.remove(Member);
+			pass;
+			#MemberList.remove(Member);
 		elif Member['UserName']==My['UserName']:  #自己
+			MemberList.remove(Member);
+		else:
 			MemberList.remove(Member);
 	return MemberList;
 
@@ -400,67 +403,69 @@ def main():
 		print('初始化失败');
 		return;
 	MemberList=webwxgetcontact();
-	print(MemberList);
 	print('开启心跳线程');
 	_thread.start_new_thread(heartBeatLoop, ());
+	print(MemberList);
 	MemberCount=len(MemberList);
-	print('通讯录共%s位好友'%MemberCount);
-	ChatRoomName = '';
-	result=[];
-	d={};
-	for Member in MemberList:
-		d[Member['UserName']]=(Member['NickName'].encode(
-			'utf-8'),Member['RemarkName'].encode('utf-8'));
-	print('开始查找...');
-	group_num=int(math.ceil(MemberCount/float(MAX_GROUP_NUM)));
-	for i in range(0, group_num):
-		UserNames=[];
-		for j in range(0,MAX_GROUP_NUM):
-			if i*MAX_GROUP_NUM+j>=MemberCount:
-				break;
-			Member=MemberList[i*MAX_GROUP_NUM+j];
-			UserNames.append(Member['UserName']);
-		#新建群组/添加成员
-		if ChatRoomName=='':
-			(ChatRoomName,DeletedList,BlockedList)=createChatroom(
-				UserNames);
-		else:
-			(DeletedList,BlockedList)=addMember(ChatRoomName,UserNames);
-		#todo BlockedList 被拉黑列表
-		DeletedCount=len(DeletedList);
-		if DeletedCount>0:
-			result+=DeletedList;
-		#删除成员
-		deleteMember(ChatRoomName,UserNames);
-		#进度条
-		progress=MAX_PROGRESS_LEN*(i + 1)/group_num;
-		print('[','#'*progress,'-'*(MAX_PROGRESS_LEN-progress),']',end=' ');
-		print('新发现你被%d人删除'%DeletedCount);
-		for i in range(DeletedCount):
-			if d[DeletedList[i]][1]!='':
-				print(d[DeletedList[i]][0]+'(%s)'%d[DeletedList[i]][1]);
-			else:
-				print(d[DeletedList[i]][0]);
-		if i!=group_num-1:
-			print('正在继续查找,请耐心等待...');
-			#下一次进行接口调用需要等待的时间
-			time.sleep(INTERFACE_CALLING_INTERVAL);
-	#todo 删除群组
-	print('\n结果汇总完毕,'+str(INTERFACE_CALLING_INTERVAL)+'s后可重试...');
-	resultNames=[];
-	for r in result:
-		if d[r][1]!='':
-			resultNames.append(d[r][0]+'(%s)'%d[r][1]);
-		else:
-			resultNames.append(d[r][0]);
-	print('---------- 被删除的好友列表(共%d人) ----------'%len(result));
-	# 过滤emoji
-	resultNames=map(lambda x: re.sub(r'<span.+/span>','',x),resultNames);
-	if len(resultNames):
-		print('\n'.join(resultNames));
-	else:
-		print("无");
-	print('---------------------------------------------');
+	for People in MemberList:
+		print(People['NickName']);
+	print('通讯录共%s个群聊'%MemberCount);
+	#ChatRoomName = '';
+	#result=[];
+	#d={};
+	#for Member in MemberList:
+	#	d[Member['UserName']]=(Member['NickName'].encode(
+	#		'utf-8'),Member['RemarkName'].encode('utf-8'));
+	#print('开始查找...');
+	#group_num=int(math.ceil(MemberCount/float(MAX_GROUP_NUM)));
+	#for i in range(0, group_num):
+	#	UserNames=[];
+	#	for j in range(0,MAX_GROUP_NUM):
+	#		if i*MAX_GROUP_NUM+j>=MemberCount:
+	#			break;
+	#		Member=MemberList[i*MAX_GROUP_NUM+j];
+	#		UserNames.append(Member['UserName']);
+	#	#新建群组/添加成员
+	#	if ChatRoomName=='':
+	#		(ChatRoomName,DeletedList,BlockedList)=createChatroom(
+	#			UserNames);
+	#	else:
+	#		(DeletedList,BlockedList)=addMember(ChatRoomName,UserNames);
+	#	#todo BlockedList 被拉黑列表
+	#	DeletedCount=len(DeletedList);
+	#	if DeletedCount>0:
+	#		result+=DeletedList;
+	#	#删除成员
+	#	deleteMember(ChatRoomName,UserNames);
+	#	#进度条
+	#	progress=MAX_PROGRESS_LEN*(i + 1)/group_num;
+	#	print('[','#'*progress,'-'*(MAX_PROGRESS_LEN-progress),']',end=' ');
+	#	print('新发现你被%d人删除'%DeletedCount);
+	#	for i in range(DeletedCount):
+	#		if d[DeletedList[i]][1]!='':
+	#			print(d[DeletedList[i]][0]+'(%s)'%d[DeletedList[i]][1]);
+	#		else:
+	#			print(d[DeletedList[i]][0]);
+	#	if i!=group_num-1:
+	#		print('正在继续查找,请耐心等待...');
+	#		#下一次进行接口调用需要等待的时间
+	#		time.sleep(INTERFACE_CALLING_INTERVAL);
+	##todo 删除群组
+	#print('\n结果汇总完毕,'+str(INTERFACE_CALLING_INTERVAL)+'s后可重试...');
+	#resultNames=[];
+	#for r in result:
+	#	if d[r][1]!='':
+	#		resultNames.append(d[r][0]+'(%s)'%d[r][1]);
+	#	else:
+	#		resultNames.append(d[r][0]);
+	#print('---------- 被删除的好友列表(共%d人) ----------'%len(result));
+	## 过滤emoji
+	#resultNames=map(lambda x: re.sub(r'<span.+/span>','',x),resultNames);
+	#if len(resultNames):
+	#	print('\n'.join(resultNames));
+	#else:
+	#	print("无");
+	#print('---------------------------------------------');
 #windows下编码问题修复
 #http://blog.csdn.net/heyuxuanzee/article/details/8442718
 class UnicodeStreamFilter:
