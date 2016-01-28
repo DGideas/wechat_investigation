@@ -9,9 +9,11 @@ except ImportError:
 try:
 	import urllib2 as wdf_urllib;
 	from cookielib import CookieJar;
+	from cookielib import LWPCookieJar;
 except ImportError:
 	import urllib.request as wdf_urllib;
 	from http.cookiejar import CookieJar;
+	from http.cookiejar import LWPCookieJar;
 import re;
 import time;
 import xml.dom.minidom;
@@ -21,7 +23,6 @@ import math;
 import subprocess;
 import ssl;
 import _thread;
-import cookielib;
 DEBUG = False;
 MAX_GROUP_NUM=20;  #每组人数
 INTERFACE_CALLING_INTERVAL=30;  #接口调用时间间隔, 间隔太短容易出现"操作太频繁", 会被限制操作半小时左右
@@ -41,7 +42,7 @@ BaseRequest={};
 ContactList=[];
 My=[];
 SyncKey=[];
-cj=cookielib.LWPCookieJar();
+cj=LWPCookieJar();
 cookie_support=wdf_urllib.HTTPCookieProcessor(cj);
 opener=wdf_urllib.build_opener(cookie_support,wdf_urllib.HTTPHandler);
 wdf_urllib.install_opener(opener);
