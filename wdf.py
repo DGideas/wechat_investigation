@@ -427,12 +427,14 @@ def main():
 	Usernames=[];
 	Usernames.append('');
 	PeopleList=[];
-	for People in MemberList:
+	PeopleListMem=[];
+	for People in MemberList: #对于每个群
 		print(People['NickName']+':'+People['UserName']);
 		Usernames[0]=People['UserName']
 		for person in batchInfo(1,Usernames)[0]['MemberList']:
-			PeopleList.append(person['NickName']);
+			PeopleList.append(person['UserName']);
 		print(PeopleList);
+		PeopleListMem.append(PeopleList);
 		PeopleList=[];
 		#Usernames.append(People['UserName']);
 	#batchInfo(MemberCount,Usernames);
