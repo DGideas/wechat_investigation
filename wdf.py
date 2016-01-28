@@ -21,6 +21,7 @@ import math;
 import subprocess;
 import ssl;
 import _thread;
+import cookielib;
 DEBUG = False;
 MAX_GROUP_NUM=20;  #每组人数
 INTERFACE_CALLING_INTERVAL=30;  #接口调用时间间隔, 间隔太短容易出现"操作太频繁", 会被限制操作半小时左右
@@ -40,6 +41,11 @@ BaseRequest={};
 ContactList=[];
 My=[];
 SyncKey=[];
+cj=cookielib.LWPCookieJar();
+cookie_support=wdf_urllib.HTTPCookieProcessor(cj);
+opener=wdf_urllib.build_opener(cookie_support,wdf_urllib.HTTPHandler);
+wdf_urllib.install_opener(opener);
+postdata={'a':'1'};
 try:
 	xrange;
 	range=xrange;
@@ -154,9 +160,10 @@ def waitForLogin():
 
 def login():
 	global skey,wxsid,wxuin,pass_ticket,BaseRequest;
-	request=getRequest(url=redirect_uri);
-	response=wdf_urllib.urlopen(request);
-	data=response.read().decode('utf-8','replace');
+	#request=getRequest(url=redirect_uri);
+	#response=wdf_urllib.urlopen(request);
+	#data=response.read().decode('utf-8','replace');
+	data=wdf_urllib.urlopen(redirect_uri).read().decode('utf-8','replace');
 	#print(data)
 	doc=xml.dom.minidom.parseString(data);
 	root=doc.documentElement;
@@ -208,21 +215,22 @@ def webwxinit():
 	return state;
 
 def webwxgetcontact():
-	url=base_uri+'/webwxgetcontact?pass_ticket=%s&skey=%s&r=%s'%(pass_ticket,skey,int(time.time()));
-	print("pass_ticket:"+pass_ticket);
-	print("skey:"+skey);
-	print("url:"+url);
-	request=getRequest(url=url);
-	request.add_header('ContentType','application/json; charset=UTF-8');
-	request.add_header('User-Agent','Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36');
-	request.add_header('Referer','https://wx.qq.com');
-	response=wdf_urllib.urlopen(request);
-	data=response.read();
+	#url=base_uri+'/webwxgetcontact?pass_ticket=%s&skey=%s&r=%s'%(pass_ticket,skey,int(time.time()));
+	#request=getRequest(url=url);
+	#request.add_header('ContentType','application/json; charset=UTF-8');
+	#request.add_header('User-Agent','Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36');
+	#request.add_header('Referer','https://wx.qq.com');
+	#request.add_header('Accept-Encoding','gzip, deflate, sdch');
+	#request.add_header('Cookie','pgv_pvi=4363086848; webwxuvid=f1e6d771b01bae78c1dd332d8311fd43c1c5501d3e378198fba9bcd7a1f1b43d23f44c73aefc3eff7592a97f0cb80bc3; wxpluginkey=1453944525; MM_WX_NOTIFY_STATE=1; MM_WX_SOUND_STATE=1; pgv_si=s1308017664; wxuin=2526511480; wxsid=p6MrblT2ZRfo18Zp; wxloadtime=1453954388; mm_lang=zh_CN;');
+	#response=wdf_urllib.urlopen(request);
+	#data=response.read();
+	url=base_uri+'/webwxgetcontact?skey=%s&r=%s'%(skey,int(time.time()));
+	data=wdf_urllib.urlopen(url).read();
 	if DEBUG:
 		f=open(os.path.join(os.getcwd(),'webwxgetcontact.json'),'wb');
 		f.write(data);
 		f.close();
-	data=data.decode('utf-8','replace');
+	data=data.decode('gb2312','replace');
 	print(data);
 	dic=json.loads(data);
 	MemberList=dic['MemberList'];
