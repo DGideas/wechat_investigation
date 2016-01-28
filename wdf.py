@@ -198,6 +198,7 @@ def webwxinit():
 		f.close();
 	data=data.decode('utf-8','replace');
 	print(data);
+	print(url);
 	global ContactList,My,SyncKey;
 	dic=json.loads(data);
 	ContactList=dic['ContactList'];
@@ -207,12 +208,14 @@ def webwxinit():
 	return state;
 
 def webwxgetcontact():
-	url=base_uri+'/webwxgetcontact?pass_ticket=%s&skey=%s&r=%s' % (pass_ticket,skey,int(time.time()));
+	url=base_uri+'/webwxgetcontact?pass_ticket=%s&skey=%s&r=%s'%(pass_ticket,skey,int(time.time()));
 	print("pass_ticket:"+pass_ticket);
 	print("skey:"+skey);
 	print("url:"+url);
 	request=getRequest(url=url);
 	request.add_header('ContentType','application/json; charset=UTF-8');
+	request.add_header('User-Agent','Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36');
+	request.add_header('Referer','https://wx.qq.com');
 	response=wdf_urllib.urlopen(request);
 	data=response.read();
 	if DEBUG:
@@ -368,7 +371,7 @@ def main():
 		opener=wdf_urllib.build_opener(
 			wdf_urllib.HTTPCookieProcessor(CookieJar()));
 		opener.addheaders=[
-			('User-agent','Mozilla/5.0 (Macintosh; Intel Mac OS X 10_11_2) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/44.0.2403.125 Safari/537.36')];
+			('User-agent','Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/45.0.2454.101 Safari/537.36')];
 		wdf_urllib.install_opener(opener);
 	except:
 		pass;
@@ -434,7 +437,7 @@ def main():
 			#下一次进行接口调用需要等待的时间
 			time.sleep(INTERFACE_CALLING_INTERVAL);
 	#todo 删除群组
-	print('\n结果汇总完毕,20s后可重试...');
+	print('\n结果汇总完毕,'+str(INTERFACE_CALLING_INTERVAL)+'s后可重试...');
 	resultNames=[];
 	for r in result:
 		if d[r][1]!='':
