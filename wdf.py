@@ -265,8 +265,9 @@ def batchInfo(num,UserNames):
 	response=wdf_urllib.urlopen(request);
 	data=response.read().decode('utf-8','replace');
 	dic=json.loads(data);
-	for item in dic:
-		print(item);
+	#print(dic['Count']); #请求的群组数量
+	print(dic['ContactList'][0]['MemberCount']); #群中的人数
+	return dic['ContactList'];
 
 def createChatroom(UserNames):
 	MemberList=[{'UserName':UserName} for UserName in UserNames];
@@ -422,12 +423,19 @@ def main():
 	_thread.start_new_thread(heartBeatLoop, ());
 	print(MemberList);
 	MemberCount=len(MemberList);
+	print('通讯录共%s个群聊'%MemberCount);
 	Usernames=[];
+	Usernames.append('');
+	PeopleList=[];
 	for People in MemberList:
 		print(People['NickName']+':'+People['UserName']);
-		Usernames.append(People['UserName']);
-	print('通讯录共%s个群聊'%MemberCount);
-	batchInfo(MemberCount,Usernames);
+		Usernames[0]=People['UserName']
+		for person in batchInfo(1,Usernames)[0]['MemberList']:
+			PeopleList.append(person['NickName']);
+		print(PeopleList);
+		PeopleList=[];
+		#Usernames.append(People['UserName']);
+	#batchInfo(MemberCount,Usernames);
 	#ChatRoomName = '';
 	#result=[];
 	#d={};
