@@ -197,7 +197,7 @@ def webwxinit():
 		f.write(data);
 		f.close();
 	data=data.decode('utf-8','replace');
-	print(data)
+	print(data);
 	global ContactList,My,SyncKey;
 	dic=json.loads(data);
 	ContactList=dic['ContactList'];
@@ -207,10 +207,7 @@ def webwxinit():
 	return state;
 
 def webwxgetcontact():
-	url=base_uri+\
-		'/webwxbatchgetcontact?pass_ticket=%s&skey=%s&r=%s'%(
-			#pass_ticket,int(time.time()),skey);
-			pass_ticket,skey,int(time.time()));
+	url=base_uri+'/webwxgetcontact?pass_ticket=%s&skey=%s&r=%s' % (pass_ticket,skey,int(time.time()));
 	print("pass_ticket:"+pass_ticket);
 	print("skey:"+skey);
 	print("url:"+url);
@@ -222,8 +219,8 @@ def webwxgetcontact():
 		f=open(os.path.join(os.getcwd(),'webwxgetcontact.json'),'wb');
 		f.write(data);
 		f.close();
-	print(data);
 	data=data.decode('utf-8','replace');
+	print(data);
 	dic=json.loads(data);
 	MemberList=dic['MemberList'];
 	#倒序遍历,不然删除的时候出问题..
@@ -233,9 +230,9 @@ def webwxgetcontact():
 		Member=MemberList[i];
 		if Member['VerifyFlag']&8!=0:  #公众号/服务号
 			MemberList.remove(Member);
-		elif Member['UserName'] in SpecialUsers:  #特殊账号
+		elif Member['UserName'] in SpecialUsers: #特殊账号
 			MemberList.remove(Member);
-		elif Member['UserName'].find('@@')!=-1:  #群聊
+		elif Member['UserName'].find('@@')!=-1: #群聊
 			MemberList.remove(Member);
 		elif Member['UserName']==My['UserName']:  #自己
 			MemberList.remove(Member);
