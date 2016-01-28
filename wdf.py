@@ -232,7 +232,7 @@ def webwxgetcontact():
 		f.write(data);
 		f.close();
 	data=data.decode('utf-8','replace');
-	#print(data);
+	print(data);
 	dic=json.loads(data);
 	MemberList=dic['MemberList'];
 	#倒序遍历,不然删除的时候出问题..
@@ -252,6 +252,21 @@ def webwxgetcontact():
 		else:
 			MemberList.remove(Member);
 	return MemberList;
+
+def batchInfo(num,UserNames):
+	url=base_uri+'/webwxbatchgetcontact?pass_ticket=%s&type=ex&r=%s'%(pass_ticket,int(time.time()));
+	params={
+		'BaseRequest':BaseRequest,
+		'Count':num,
+		'List':[{'UserName':UserName} for UserName in UserNames],
+	};
+	request=getRequest(url=url,data=json.dumps(params));
+	request.add_header('ContentType','application/json; charset=UTF-8');
+	response=wdf_urllib.urlopen(request);
+	data=response.read().decode('utf-8','replace');
+	dic=json.loads(data);
+	for item in dic:
+		print(item);
 
 def createChatroom(UserNames):
 	MemberList=[{'UserName':UserName} for UserName in UserNames];
@@ -407,9 +422,12 @@ def main():
 	_thread.start_new_thread(heartBeatLoop, ());
 	print(MemberList);
 	MemberCount=len(MemberList);
+	Usernames=[];
 	for People in MemberList:
-		print(People['NickName']);
+		print(People['NickName']+':'+People['UserName']);
+		Usernames.append(People['UserName']);
 	print('通讯录共%s个群聊'%MemberCount);
+	batchInfo(MemberCount,Usernames);
 	#ChatRoomName = '';
 	#result=[];
 	#d={};
