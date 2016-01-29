@@ -187,6 +187,13 @@ def login():
 		'Skey':skey,
 		'DeviceID':deviceId,
 	};
+	print('DeviceID:'+str(deviceId));
+	try:
+		pass;
+	except SuperError:
+		pass;
+	finally:
+		pass;
 	return True;
 
 def webwxinit():
