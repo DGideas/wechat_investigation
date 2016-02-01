@@ -52,6 +52,8 @@ try:
 	range=xrange;
 except:
 	pass;
+fileHandle=open('res.csv','a');
+fileHandle.write('群名称,人数\n');
 def responseState(func,BaseResponse):
 	ErrMsg=BaseResponse['ErrMsg'];
 	Ret=BaseResponse['Ret'];
@@ -272,8 +274,16 @@ def batchInfo(num,UserNames):
 	response=wdf_urllib.urlopen(request);
 	data=response.read().decode('utf-8','replace');
 	dic=json.loads(data);
-	#print(dic['Count']); #请求的群组数量
-	print(dic['ContactList'][0]['MemberCount']); #群中的人数
+	print(dic['Count']); #请求的群组数量
+	#print(dic['ContactList']);
+	try:
+		print(dic['ContactList'][0]['MemberCount']); #群中的人数
+	except IndexError:
+		pass;
+	try:
+		fileHandle.write(str(dic['ContactList'][0]['MemberCount'])+'\n');
+	except IndexError:
+		fileHandle.write('未获得'+'\n');
 	return dic['ContactList'];
 
 def createChatroom(UserNames):
@@ -387,7 +397,7 @@ def webwxsync():
 	request.add_header('ContentType','application/json; charset=UTF-8');
 	response=wdf_urllib.urlopen(request);
 	data=response.read().decode('utf-8','replace');
-	print(data)
+	#print(data)
 	dic=json.loads(data);
 	SyncKey=dic['SyncKey'];
 	state=responseState('webwxsync',dic['BaseResponse']);
@@ -426,21 +436,24 @@ def main():
 		print('初始化失败');
 		return;
 	MemberList=webwxgetcontact();
-	print('开启心跳线程');
+	#print('开启心跳线程');
 	_thread.start_new_thread(heartBeatLoop, ());
-	print(MemberList);
+	#print(MemberList);
 	MemberCount=len(MemberList);
-	print('通讯录共%s个群聊'%MemberCount);
+	#print('通讯录共%s个群聊'%MemberCount);
 	Usernames=[];
 	Usernames.append('');
 	PeopleList=[];
 	PeopleListMem=[];
 	for People in MemberList: #对于每个群
+		time.sleep(3);
 		print(People['NickName']+':'+People['UserName']);
-		Usernames[0]=People['UserName']
-		for person in batchInfo(1,Usernames)[0]['MemberList']:
-			PeopleList.append(person['UserName']);
-		print(PeopleList);
+		fileHandle.write(People['NickName']+',');
+		Usernames[0]=People['UserName'];
+		batchInfo(1,Usernames);
+		#for person in batchInfo(1,Usernames)[0]['MemberList']:
+		#	PeopleList.append(person['UserName']);
+		#print(len(PeopleList));
 		PeopleListMem.append(PeopleList);
 		PeopleList=[];
 		#Usernames.append(People['UserName']);
